@@ -18,9 +18,17 @@ const createStudent = async (req, res) => {
 }
 
 // read students
+// student -> course
+// course -> teacher
+// Nested population
 const readStudents = async (req, res) => {
     try{
-        const students = await Student.find()
+        const students = await Student.find().populate({
+            path: 'course',
+            populate: {
+                path: 'teacher'
+            }
+        })
         res.status(200).json(students)
     }
     catch(err) {

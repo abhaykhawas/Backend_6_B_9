@@ -1,0 +1,10 @@
+Batch : 
+
+  {
+     _id, start_date, end_date, course, teacher, status ( IP | UPC | Done ), progress (%), Schedule
+  }
+
+
+student : 
+
+ { batch_id }
