@@ -176,6 +176,9 @@ const searchStudents = async (req, res) => {
 }
 
 
+// Test all API
+
+
 module.exports = { 
     createStudent, 
     readStudents, 
