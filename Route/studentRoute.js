@@ -6,7 +6,9 @@ const {
     updateStudent,
     deleteStudent,
     deleteStudentWithEmail,
-    updateStudentByEmail 
+    updateStudentByEmail,
+    softDeleteStudent ,
+    addGrade
 } = require('../Controller/studentController')
 const router = express.Router()
 
@@ -24,5 +26,9 @@ router.delete('/:id', deleteStudent)
 router.delete('/', deleteStudentWithEmail)
 
 router.patch('/:email', updateStudentByEmail)
+
+router.delete('/soft/:id', softDeleteStudent)
+
+router.post('/grade/:id', addGrade)
 
 module.exports = router

@@ -7,6 +7,12 @@ const courseSchema = new mongoose.Schema(
         teacher: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Teacher'
+        },
+        capacity : {
+            type: Number,
+            default: 3,
+            min: 3,
+            max: 500
         }
     },
     { timestamps: true }

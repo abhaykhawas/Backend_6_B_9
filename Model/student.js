@@ -20,7 +20,17 @@ const studentSchema = new mongoose.Schema({
     course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Course'
-    }
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
+    grades : [
+        {
+            subject: String,
+            marks: Number
+        }
+    ]
 }, {timestamps: true})
 
 module.exports = mongoose.model("Student", studentSchema)

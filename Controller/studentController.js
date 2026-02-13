@@ -1,11 +1,25 @@
 const Student = require('../Model/student')
-require('../Model/course')
+const Course = require('../Model/course')
 
 
 // This is creation of student
 const createStudent = async (req, res) => {
     try{
         const { name, age, email, course } = req.body
+
+        const selectedCourse = await Course.findById(course)
+
+        if(!selectedCourse) return res.status(404).json({message: "Course not found!!!"})
+
+        // const totalStudentLength = (await Student.find({course})).length
+
+        const totalStudentLength = await Student.countDocuments({ course })
+
+        if(totalStudentLength >= selectedCourse.capacity) {
+            return res.status(400).json({
+                message: "Course is full. Enrollment Closed!!!"
+            })
+        }
 
         const student = new Student({name, age, email, course})
         await student.save()
@@ -109,5 +123,67 @@ const deleteStudentWithEmail = async (req, res) => {
     }
 }
 
+const softDeleteStudent = async (req, res) => {
+    try{
+        await Student.findByIdAndUpdate(
+            req.params.id,
+            { isActive: false },
+            { new: true }
+        )
 
-module.exports = { createStudent, readStudents, readStudentById, updateStudent, deleteStudent, deleteStudentWithEmail, updateStudentByEmail }
+        res.status(200).json({message: "Student Deactivated"})
+
+    }
+    catch(err) {
+        res.status(400).json({error: err.message})
+    }
+}
+
+// Adding grade one subject at a time
+const addGrade = async (req, res) => {
+    try{
+        const { subject, marks } = req.body
+
+        const student = await Student.findByIdAndUpdate(
+            req.params.id,
+            {
+                $push: { grades: { subject, marks } }
+            },
+            { new : true }
+        )
+
+        res.status(200).json(student)
+    }
+    catch(err) {
+        res.status(400).json({error: err.message})
+    }
+}
+
+// search & filter API
+
+// Admin want :
+// student age > 20
+// student in specific course
+// Student name
+
+const searchStudents = async (req, res) => {
+    try{
+
+    }
+    catch(err){
+        res.status(400).json({error: err.message})
+    }
+}
+
+
+module.exports = { 
+    createStudent, 
+    readStudents, 
+    readStudentById, 
+    updateStudent, 
+    deleteStudent, 
+    deleteStudentWithEmail, 
+    updateStudentByEmail, 
+    softDeleteStudent,
+    addGrade 
+}
