@@ -1,5 +1,7 @@
 const Student = require('../Model/student')
 const Course = require('../Model/course')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
 
 
 // This is creation of student
@@ -164,11 +166,41 @@ const addGrade = async (req, res) => {
 // Admin want :
 // student age > 20
 // student in specific course
-// Student name
 
 const searchStudents = async (req, res) => {
     try{
+        const { minAge, course, isActive } = req.query
 
+        const page = parseInt(req.query.page) || 1
+        const limit = 2
+        const skip = (page - 1) * limit
+
+        let filter = {}
+
+        if(minAge) {
+            filter.age = {$gte : minAge}
+        }
+
+        if(course) {
+            filter.course = course
+        }
+
+        if(isActive == 1) {
+            filter.isActive = true
+        }
+        else if (isActive == 2) {
+            filter.isActive = false
+        }
+        
+
+        // Think about filter for grade
+
+        // Think about total number of pages (count) return to frontend
+
+
+        const students = await Student.find(filter).skip(skip).limit(limit)
+
+        res.status(200).json(students)
     }
     catch(err){
         res.status(400).json({error: err.message})
@@ -179,6 +211,87 @@ const searchStudents = async (req, res) => {
 // Test all API
 
 
+const register = async (req, res) => {
+    try{
+        const { name, age, email, course, password} = req.body 
+
+        const exsistingUser = await Student.findOne({ email })
+
+        if(exsistingUser) {
+            return res.status(400).json({ message: "User already exsists" })
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password, salt)
+
+        const student = await Student.create({ name, age, email, course, password:hashedPassword })
+
+        const token = jwt.sign(
+            { id: student._id, type: "student" },
+            "THis is my secret",
+            { expiresIn: "5m" }
+        )
+
+        res.status(201).json({
+            message: "Student registered successfully",
+            token,
+            student
+        })
+
+    }
+    catch(err){
+        res.status(400).json({error: err.message})
+    }
+}
+
+const login = async (req, res) => {
+    try{
+        const { email, password } = req.body
+
+        const exsistingStudent = await Student.findOne({ email })
+
+        if(!exsistingStudent) {
+            return res.status(404).json({ message: "Invalid Credentails" })
+        }
+
+        const isMatch = await bcrypt.compare(password, exsistingStudent.password)
+
+        if(!isMatch) {
+            return res.status(400).json({ message: "Invalid Credentials" })
+        }
+
+        const token = jwt.sign(
+            { id: exsistingStudent._id, type: "student" },
+            "THis is my secret",
+            { expiresIn: "5m" }
+        )
+
+        res.status(200).json({
+            message: 'Login Successful',
+            token: token,
+            email: exsistingStudent.email
+        })
+    }
+    catch{
+        res.status(400).json({error: err.message})
+    }
+}
+
+
+const updateStudentByStudent = async (req, res) => {
+    try{
+        const student = await Student.findByIdAndUpdate(
+            req.user.id,
+            req.body,
+            {new : true}
+        )
+        res.status(200).json(student)
+    }
+    catch(err) {
+        res.status(400).json({error: err.message})
+    }
+}
+
 module.exports = { 
     createStudent, 
     readStudents, 
@@ -188,5 +301,9 @@ module.exports = {
     deleteStudentWithEmail, 
     updateStudentByEmail, 
     softDeleteStudent,
-    addGrade 
+    addGrade,
+    searchStudents,
+    register ,
+    login,
+    updateStudentByStudent
 }

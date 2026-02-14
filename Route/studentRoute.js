@@ -8,27 +8,43 @@ const {
     deleteStudentWithEmail,
     updateStudentByEmail,
     softDeleteStudent ,
-    addGrade
+    addGrade,
+    searchStudents,
+    register,
+    login,
+    updateStudentByStudent
 } = require('../Controller/studentController')
+
+const authMiddleware = require('../Middleware/authMiddleware')
+const teacherAuthMiddleware = require('../Middleware/teacherAuthMiddleware')
+
 const router = express.Router()
 
 
-router.post('/', createStudent)
+router.post('/',authMiddleware, createStudent)
 
-router.get('/', readStudents)
+router.get('/', authMiddleware, teacherAuthMiddleware,readStudents)
 
-router.get("/:id", readStudentById)
+router.get('/search', authMiddleware, teacherAuthMiddleware ,searchStudents)
 
-router.put('/:id', updateStudent)
+router.get("/:id", authMiddleware, teacherAuthMiddleware ,readStudentById)
 
-router.delete('/:id', deleteStudent)
+router.put('/:id', authMiddleware, teacherAuthMiddleware ,updateStudent)
 
-router.delete('/', deleteStudentWithEmail)
+router.put('/', authMiddleware, updateStudentByStudent)
 
-router.patch('/:email', updateStudentByEmail)
+router.delete('/:id', authMiddleware, teacherAuthMiddleware ,deleteStudent)
 
-router.delete('/soft/:id', softDeleteStudent)
+router.delete('/',authMiddleware, teacherAuthMiddleware ,deleteStudentWithEmail)
 
-router.post('/grade/:id', addGrade)
+router.patch('/:email', authMiddleware, teacherAuthMiddleware ,updateStudentByEmail)
+
+router.delete('/soft/:id', authMiddleware,teacherAuthMiddleware ,softDeleteStudent)
+
+router.post('/grade/:id', authMiddleware,teacherAuthMiddleware ,addGrade)
+
+router.post('/signup', register)
+
+router.post('/login', login)
 
 module.exports = router

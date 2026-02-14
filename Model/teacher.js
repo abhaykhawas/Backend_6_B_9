@@ -6,7 +6,16 @@ const teacherSchema = new mongoose.Schema({
         required: true
     },
     expertise: String,
-    expereince: Number
+    expereince: Number,
+    email: {
+        type: String,
+        unique : true,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    }
 }, {timestamps: true})
 
 module.exports = mongoose.model("Teacher", teacherSchema)

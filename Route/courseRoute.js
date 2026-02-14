@@ -1,13 +1,14 @@
 const { createCourse, getCourses, getStudentWithCourse } = require('../Controller/courseController')
 const express = require('express')
 const router = express.Router()
+const authMiddleware = require('../Middleware/authMiddleware')
+const teacherAuthMiddleware = require('../Middleware/teacherAuthMiddleware')
 
+router.post('/', authMiddleware, teacherAuthMiddleware ,createCourse)
 
-router.post('/', createCourse)
+router.get('/', authMiddleware ,getCourses)
 
-router.get('/', getCourses)
-
-router.get('/:courseId', getStudentWithCourse)
+router.get('/:courseId', authMiddleware ,getStudentWithCourse)
 
 
 module.exports = router
