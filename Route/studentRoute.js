@@ -29,7 +29,7 @@ router.get('/search', authMiddleware, teacherAuthMiddleware ,searchStudents)
 
 router.get("/:id", authMiddleware, teacherAuthMiddleware ,readStudentById)
 
-router.put('/:id', authMiddleware, teacherAuthMiddleware ,updateStudent)
+// router.put('/:id', authMiddleware, teacherAuthMiddleware ,updateStudent)
 
 router.put('/', authMiddleware, updateStudentByStudent)
 

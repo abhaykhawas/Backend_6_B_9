@@ -51,7 +51,7 @@ const register = async (req, res) => {
         // create JWT token
         const token = jwt.sign(
             { id: teacher._id, type: "teacher" },
-            "THis is my secret",
+            process.env.JWT_SECRET,
             { expiresIn: "5m" }
         )
 
@@ -86,14 +86,15 @@ const login = async (req, res) => {
         // Generate JWT
         const token = jwt.sign(
             { id: teacher._id, type: "teacher" },
-            "THis is my secret",
-            { expiresIn: "5m" }
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
         )
 
         res.status(200).json({
             message: "Login Succesful",
             token,
-            email: teacher.email
+            email: teacher.email,
+            name: teacher.name
         })
     }
     catch(err) {

@@ -39,7 +39,9 @@ const createStudent = async (req, res) => {
 // Nested population
 const readStudents = async (req, res) => {
     try{
-        const students = await Student.find().populate({
+        const courses = await Course.find({ teacher : req.user.id }).select("_id")
+
+        const students = await Student.find({ course: { $in : courses } }).populate({
             path: 'course',
             populate: {
                 path: 'teacher'
@@ -228,14 +230,14 @@ const register = async (req, res) => {
 
         const token = jwt.sign(
             { id: student._id, type: "student" },
-            "THis is my secret",
+            process.env.JWT_SECRET,
             { expiresIn: "5m" }
         )
 
         res.status(201).json({
             message: "Student registered successfully",
             token,
-            student
+            name: student.name
         })
 
     }
@@ -262,14 +264,16 @@ const login = async (req, res) => {
 
         const token = jwt.sign(
             { id: exsistingStudent._id, type: "student" },
-            "THis is my secret",
-            { expiresIn: "5m" }
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
         )
 
         res.status(200).json({
             message: 'Login Successful',
             token: token,
-            email: exsistingStudent.email
+            email: exsistingStudent.email,
+            name: exsistingStudent.name,
+            age: exsistingStudent.age
         })
     }
     catch{

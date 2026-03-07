@@ -6,7 +6,7 @@ const teacherAuthMiddleware = require('../Middleware/teacherAuthMiddleware')
 
 router.post('/', authMiddleware, teacherAuthMiddleware ,createCourse)
 
-router.get('/', authMiddleware ,getCourses)
+router.get('/' ,getCourses)
 
 router.get('/:courseId', authMiddleware ,getStudentWithCourse)
 

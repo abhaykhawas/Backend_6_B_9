@@ -4,9 +4,12 @@ require('dotenv').config()
 const studentRoute = require('./Route/studentRoute')
 const teacherRoute = require('./Route/teacherRoute')
 const courseRoute = require('./Route/courseRoute')
+const cors = require('cors')
 
 
 const app = express()
+
+app.use(cors())
 
 app.use(express.json())
 

@@ -6,7 +6,12 @@ const Student = require('../Model/student')
 // create course
 const createCourse = async (req, res) => {
     try{
-        const course = await Course.create(req.body)
+        const course = await Course.create({
+            title: req.body.title, 
+            duration: req.body.duration, 
+            capacity: req.body.capacity,
+            teacher: req.user.id
+        })
         res.status(201).json(course)
     }
     catch(err) {
